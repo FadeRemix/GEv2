@@ -8,6 +8,15 @@ local PepsisWorld = library:CreateWindow({
 	}
 })
 ---------------------------------------------
+local i = 0
+local time = 0
+local Stats = game:GetService("Stats").PerformanceStats
+local playas = game:GetService("Players")
+---------------------------------------------
+local function round(number, decimalPlaces)
+	return math.round(number * 10^decimalPlaces) * 10^-decimalPlaces
+end
+---------------------------------------------
 local GeneralTab = PepsisWorld:CreateTab({
 	Name = "General"
 })
@@ -24,8 +33,8 @@ local TESTINGSection = GeneralTab:CreateSection({
 	Name = "TESTING UI"
 })
 ---------------------------------------------
-local MiscSection = GeneralTab:CreateSection({
-	Name = "Misc",
+local InfoSection = GeneralTab:CreateSection({
+	Name = "Info",
 	Side = "Right"
 })
 ---------------------------------------------
@@ -115,10 +124,26 @@ TESTINGSection:AddSlider({
 	end
 })
 ---------------------------------------------
-MiscSection:AddToggle({
-	Name = "PlaceHolder",
-	Flag = "MiscSection_PlaceHolder",
-	Callback = print
+InfoPIS = InfoSection:AddLabel({
+    Name = "Players In Server: ---"
+    
+})
+---------------------------------------------
+InfoElapTime = InfoSection:AddLabel({
+    Name = "Time Elapsed: 00:00:00"
+    
+})
+---------------------------------------------
+InfoGPU = InfoSection:AddLabel({
+	Name = "GPU: ",
+})
+---------------------------------------------
+InfoCPU = InfoSection:AddLabel({
+	Name = "CPU: ",
+})
+---------------------------------------------
+InfoMemory = InfoSection:AddLabel({
+	Name = "Memory: ",
 })
 ---------------------------------------------
 FunSection:AddToggle({
@@ -190,7 +215,7 @@ PlayerDropDown = PlayerSeleSection:AddDropdown({
 	
 	PlrMembershipInfo:Set("Membership: ".. tostring(player.MembershipType.Name))
 	
-	while wait(0.01) do	
+	while wait(0.1) do
 		PlrHealthInfo:Set("Health: ".. tostring(plrz.Humanoid.Health))	
 		if plrz.Humanoid.MoveDirection ~= Vector3.new(0,0,0) then
 			PlrStatusInfo:Set("Status: Walking")
@@ -202,3 +227,23 @@ PlayerDropDown = PlayerSeleSection:AddDropdown({
 		end
 	end
 })
+
+while wait(0.1) do
+    i = i + 1
+    	 if i == 10 then
+		    time = time + 1
+  		    InfoElapTime:Set(string.format("Time Elapsed: ".."%02d:%02d:%02d",time/3600,(time%3600)/60,time%60))
+  	    i = 0
+    end
+
+    gPlayers = playas:GetPlayers()
+    local numOFplrs = #gPlayers
+	InfoPIS:Set("Players in Server: "..tostring(numOFplrs))
+
+  	local GPUVAL = Stats["GPU"]:GetValue()
+		InfoGPU:Set("GPU: "..tostring(round(GPUVAL,3)))
+	local CPUVAL = Stats["CPU"]:GetValue()
+		InfoCPU:Set("CPU: "..tostring(round(CPUVAL,3)))
+	local MEMUsage = Stats["Memory"]:GetValue()
+		InfoMemory:Set("Memory: "..tostring(round(MEMUsage,3)))
+end

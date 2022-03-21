@@ -12,6 +12,11 @@ local i = 0
 local time = 0
 local Stats = game:GetService("Stats").PerformanceStats
 local playas = game:GetService("Players")
+local LPlayas = game:GetService("Players").LocalPlayer
+local WorkPlayer = game:GetService("Workspace"):FindFirstChild(LPlayas.Name)
+local humnud = WorkPlayer.Humanoid
+local CreatrID = game.CreatorId
+local CheckName = game:GetService("Players"):GetNameFromUserIdAsync(CreatrID)
 ---------------------------------------------
 local function round(number, decimalPlaces)
 	return math.round(number * 10^decimalPlaces) * 10^-decimalPlaces
@@ -84,6 +89,33 @@ TESTINGSection:AddToggle({
 })
 ---------------------------------------------
 TESTINGSection:AddSlider({
+	Name = "Walkspeed",
+	Flag = "TESTINGSection_Walk Speed",
+	Value = 16,
+	Min = 0,
+	Max = 100,
+	Textbox = true,
+	Format = function(Value)
+	humnud.WalkSpeed = Value
+		return "Walkspeed: ".. tostring(Value)
+	end
+})
+---------------------------------------------
+TESTINGSection:AddSlider({
+	Name = "Jump Power",
+	Flag = "TESTINGSection_JumpPower",
+	Value = 50,
+	Min = 0,
+	Max = 500,
+	Textbox = true,
+	Format = function(Value)
+	humnud.JumpPower = Value
+		return "Jump Power: "..tostring(Value)
+	end
+})
+
+---------------------------------------------
+TESTINGSection:AddSlider({
 	Name = "Trick Rate",
 	Flag = "TESTINGSection_TrickRate",
 	Value = 0.15,
@@ -92,41 +124,39 @@ TESTINGSection:AddSlider({
 	Max = 1
 })
 ---------------------------------------------
-TESTINGSection:AddSlider({
-	Name = "Coin Distance",
-	Flag = "TESTINGSection_CoinDistance",
-	Value = 175,
-	Min = 0,
-	Max = 200,
-	Format = function(Value)
-		if Value == 0 then
-			return "Collection Distance: Infinite"
-		else
-			return "Collection Distance: " .. tostring(Value)
-		end
-	end
+InfoCN = InfoSection:AddLabel({
+    Name = "Creator Name: "..tostring(CheckName)
+    
+})
+---------------------------------------------
+InfoCID = InfoSection:AddLabel({
+    Name = "Creator ID: "..tostring(CreatrID)
+    
+})
+---------------------------------------------
+InfoCT = InfoSection:AddLabel({
+    Name = "Creator Type: "..tostring(game.CreatorType.Name)
+    
 })
 
 ---------------------------------------------
-TESTINGSection:AddSlider({
-	Name = "Coin Distance",
-	Flag = "TESTINGSection_Coin Distance",
-	Value = 4,
-	Min = 0,
-	Max = 60,
-	Textbox = true,
-	Format = function(Value)
-		if Value == 0 then
-			return "Ragdoll Extension: Indefinite"
-		else
-			return "Ragdoll Extension: " .. tostring(Value) .. "s"
-		end
-	end
+InfoCIS = InfoSection:AddLabel({
+    Name = "Creator In Game: ---"
+})
+---------------------------------------------
+InfoPID = InfoSection:AddLabel({
+    Name = "Place ID: "..tostring(game.PlaceId)
+
+})
+---------------------------------------------
+InfoPV = InfoSection:AddLabel({
+    Name = "Place Version: "..tostring(game.PlaceVersion)
+
 })
 ---------------------------------------------
 InfoPIS = InfoSection:AddLabel({
     Name = "Players In Server: ---"
-    
+
 })
 ---------------------------------------------
 InfoElapTime = InfoSection:AddLabel({
@@ -217,18 +247,32 @@ PlayerDropDown = PlayerSeleSection:AddDropdown({
 	
 	while wait(0.1) do
 		PlrHealthInfo:Set("Health: ".. tostring(plrz.Humanoid.Health))	
-		if plrz.Humanoid.MoveDirection ~= Vector3.new(0,0,0) then
-			PlrStatusInfo:Set("Status: Walking")
-			elseif plrz.Humanoid.MoveDirection == Vector3.new(0,0,0) then
-				PlrStatusInfo:Set("Status: Standing")
-				elseif plrz.Humanoid.FloorMaterial == "Air" then
-					PlrStatusInfo:Set("Status: Jumping")
+		if plrz.Humanoid.FloorMaterial.Name == "Air" then
+			PlrStatusInfo:Set("Status: In Air")
+			elseif plrz.Humanoid.MoveDirection ~= Vector3.new(0,0,0) then
+				PlrStatusInfo:Set("Status: Walking")
+				elseif plrz.Humanoid.MoveDirection == Vector3.new(0,0,0) then
+					PlrStatusInfo:Set("Status: Standing")
 			end
 		end
 	end
 })
 
 while wait(0.1) do
+	local chkOwner = game:GetService("Players"):GetPlayerByUserId(CreatrID)
+
+   if game.CreatorType.Name ~= "User" then
+   		InfoCN:Set("Creator Name: N/A")
+   		InfoCID:Set("Creator ID: N/A")
+    	InfoCIS:Set("Creator In Server: N/A") 
+	elseif game.CreatorType.Name == "User" then
+		if chkOwner then
+    		InfoCIS:Set("Creator In Server: Yes")
+    	else
+    		InfoCIS:Set("Creator In Server: No")
+    	end
+	end
+
     i = i + 1
     	 if i == 10 then
 		    time = time + 1
@@ -246,4 +290,5 @@ while wait(0.1) do
 		InfoCPU:Set("CPU: "..tostring(round(CPUVAL,3)))
 	local MEMUsage = Stats["Memory"]:GetValue()
 		InfoMemory:Set("Memory: "..tostring(round(MEMUsage,3)))
+
 end

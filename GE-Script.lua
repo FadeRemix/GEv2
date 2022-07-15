@@ -175,6 +175,10 @@ InfoMemory = InfoSection:AddLabel({
 	Name = "Memory: ",
 })
 ---------------------------------------------
+WorkFPSval = InfoSection:AddLabel({
+	Name = "FPS: ",
+})
+---------------------------------------------
 FunSection:AddToggle({
 	Name = "PlaceHolder",
 	Flag = "FunSection_PlaceHolder"
@@ -289,5 +293,7 @@ while wait(0.1) do
 		InfoCPU:Set("CPU: "..tostring(round(CPUVAL,3)))
 	local MEMUsage = Stats["Memory"]:GetValue()
 		InfoMemory:Set("Memory: "..tostring(round(MEMUsage,3)))
+	local WorkFPS = game:GetService("Stats").Workspace.FPS:GetValue()
+		WorkFPSval:Set("FPS: "..tostring(round(WorkFPS,3)))
 
 end
